@@ -12,9 +12,9 @@ namespace chasseAuxTresors
         {
             
         }
-        static int NbLigne = 5;
+        /!static int NbLigne = 5;
         static int NbColonne = 6;
-        static string[,] GrilleAll = new string[NbLigne,NbColonne];
+        static string[,] GrilleAll = new string[NbLigne,NbColonne];!/
 
         static void creerBombesTresors(int entreeLigne1 , int entreeColonne1)
         {
