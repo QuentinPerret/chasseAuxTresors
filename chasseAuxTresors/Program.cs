@@ -12,6 +12,57 @@ namespace chasseAuxTresors
         {
             PlayGame();
         }
+
+        static void AfficherGrille(string[,] grille)
+        {
+            int indiceligne = 0;
+            int indicecolonne = 0;
+
+            Console.WriteLine();
+            Console.Write("  ");
+            for (int i = 0; i < grille.GetLength(1); i++)
+            {
+                Console.Write(" " + i + "  ");
+            }
+            for (int i = 0; i < (grille.GetLength(0) * 2 - 1); i++)
+            {
+                Console.WriteLine();
+                indicecolonne = 0;
+                if (i % 2 == 0)
+                {
+                    Console.Write((i / 2) + " ");
+                    for (int j = 0; j < (grille.GetLength(1) * 2 - 1); j++)
+                    {
+                        if (j % 2 == 0)
+                        {
+                            /*if (string.IsNullOrEmpty(grille[indiceligne, indicecolonne]))
+                            {
+                                Console.Write("  ");
+                            }
+                            else
+                            {*/
+                                Console.Write(" " + grille[indiceligne, indicecolonne]);
+                                indicecolonne++;
+                            //}
+                        }
+                        else
+                        {
+                            Console.Write(" |");
+                        }
+                    }
+                    indiceligne++;
+                }
+                else
+                {
+                    Console.Write("  ");
+                    for (int j = 0; j <= (grille.GetLength(1)*3 + grille.GetLength(1) -2); j++)
+                    {
+                        Console.Write("-");
+                    }
+                }
+            }
+            Console.WriteLine();
+        }
         static string[,] creerGrille()
         {
             bool test = false;
@@ -65,10 +116,13 @@ namespace chasseAuxTresors
                 }
                 while (GrilleAll[NumLigne, NumColonne] == "T") ;
                 GrilleAll[NumLigne, NumColonne] = "T";
+                Console.WriteLine("tl:" + NumLigne);
+                Console.WriteLine("tc " + NumColonne);
             }
             //Création des Bombes
             int NbBombes = RdNumber.Next((NbLigne / 2), ((NbLigne * NbColonne) / 2 + 1));
-            for (int i = 0; i < NbTresor; i++)
+            Console.WriteLine(NbBombes);
+            for (int i = 0; i < NbBombes; i++)
             {
                 int NumLigne = 0;
                 int NumColonne = 0;
@@ -77,27 +131,33 @@ namespace chasseAuxTresors
                     NumLigne = RdNumber.Next(0, NbLigne);
                     NumColonne = RdNumber.Next(0, NbColonne);
                 }
-                while (GrilleAll[NumLigne, NumColonne] == "T" || GrilleAll[NumLigne, NumColonne] == "B" || (NumLigne == entreeLigne1 & NumColonne == entreeColonne1));
+                while (GrilleAll[NumLigne, NumColonne] == "T" | GrilleAll[NumLigne, NumColonne] == "B" | (NumLigne == entreeLigne1 && NumColonne == entreeColonne1));
                 GrilleAll[NumLigne, NumColonne] = "B";
+                Console.WriteLine( "bl:"+ NumLigne);
+                Console.WriteLine("bc:" + NumColonne);
             }
         }
         static void definirValeurCase(string[,] GrilleAll , int NumLigne, int NumColonne)
         {
-            int valeur = 0;
-            try
+            if(string.IsNullOrEmpty(GrilleAll[NumLigne, NumColonne]))
             {
-                for(int i = -1; i < 2; i++)
+                int valeur = 0;
+                for (int i = -1; i < 2; i++)
                 {
-                    for(int j  = -1; j< 2; j++)
+                    for (int j = -1; j < 2; j++)
                     {
-                        if(GrilleAll[(NumLigne + i),(NumColonne + j)] == "T")
+                        try
                         {
-                            valeur += 2;
+                            if (GrilleAll[(NumLigne + i), (NumColonne + j)] == "T")
+                            {
+                                valeur += 2;
+                            }
+                            else if (GrilleAll[(NumLigne + i), (NumColonne + j)] == "B")
+                            {
+                                valeur += 1;
+                            }
                         }
-                        else if (GrilleAll[(NumLigne + i), (NumColonne + j)] == "B")
-                        {
-                            valeur += 1;
-                        }
+                        catch (System.IndexOutOfRangeException) { }
                     }
                 }
                 if (valeur != 0)
@@ -105,13 +165,21 @@ namespace chasseAuxTresors
                     GrilleAll[NumLigne, NumColonne] = valeur.ToString();
                 }
             }
-            catch(System.IndexOutOfRangeException) { }
         }
         static void PlayGame()
         {
             Console.WriteLine("Bienvenue dans la chasse au trésor !!!");
             string[,] mainGrille = creerGrille();
             string[,] calque = mainGrille;
+            creerBombesTresors(mainGrille, 2, 3);
+            for (int i = 0; i < mainGrille.GetLength(0); i++ )
+            {
+                for (int j = 0; j < mainGrille.GetLength(1); j++)
+                {
+                    definirValeurCase(mainGrille ,i, j);
+                }
+            }
+            AfficherGrille(mainGrille);
         }
     }
 }
