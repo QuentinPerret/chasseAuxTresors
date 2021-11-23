@@ -35,15 +35,16 @@ namespace chasseAuxTresors
                     {
                         if (j % 2 == 0)
                         {
-                            /*if (string.IsNullOrEmpty(grille[indiceligne, indicecolonne]))
+                            if (string.IsNullOrEmpty(grille[indiceligne, indicecolonne]))
                             {
                                 Console.Write("  ");
                             }
                             else
-                            {*/
+                            {
                                 Console.Write(" " + grille[indiceligne, indicecolonne]);
-                                indicecolonne++;
-                            //}
+                                
+                            }
+                            indicecolonne++;
                         }
                         else
                         {
@@ -116,12 +117,10 @@ namespace chasseAuxTresors
                 }
                 while (GrilleAll[NumLigne, NumColonne] == "T") ;
                 GrilleAll[NumLigne, NumColonne] = "T";
-                Console.WriteLine("tl:" + NumLigne);
-                Console.WriteLine("tc " + NumColonne);
             }
             //Création des Bombes
-            int NbBombes = RdNumber.Next((NbLigne / 2), ((NbLigne * NbColonne) / 2 + 1));
-            Console.WriteLine(NbBombes);
+            //int NbBombes = RdNumber.Next((NbLigne / 2), ((NbLigne * NbColonne) / 2 + 1));
+            int NbBombes = RdNumber.Next(1,10);
             for (int i = 0; i < NbBombes; i++)
             {
                 int NumLigne = 0;
@@ -131,10 +130,8 @@ namespace chasseAuxTresors
                     NumLigne = RdNumber.Next(0, NbLigne);
                     NumColonne = RdNumber.Next(0, NbColonne);
                 }
-                while (GrilleAll[NumLigne, NumColonne] == "T" | GrilleAll[NumLigne, NumColonne] == "B" | (NumLigne == entreeLigne1 && NumColonne == entreeColonne1));
+                while (GrilleAll[NumLigne, NumColonne] == "T" || GrilleAll[NumLigne, NumColonne] == "B" || (NumLigne == entreeLigne1 && NumColonne == entreeColonne1));
                 GrilleAll[NumLigne, NumColonne] = "B";
-                Console.WriteLine( "bl:"+ NumLigne);
-                Console.WriteLine("bc:" + NumColonne);
             }
         }
         static void definirValeurCase(string[,] GrilleAll , int NumLigne, int NumColonne)
@@ -166,12 +163,80 @@ namespace chasseAuxTresors
                 }
             }
         }
+        static int[] entrerInspectionUser(string[,] mainGrille)
+        {
+            bool test = false;
+            int ligneAnal = 0;
+            int colonneAnal = 0;
+            while (test == false)
+            {
+                try
+                {
+                    Console.WriteLine("Quelle ligne voulez-vous sonder?");
+                    ligneAnal = int.Parse(Console.ReadLine());
+                    test = true;
+                    if (ligneAnal > mainGrille.GetLength(0))
+                        test = false;
+                }
+                catch (System.FormatException)
+                {
+                    Console.WriteLine("Ceci n'est pas un nombre entier!");
+                }
+            }
+            test = false;
+            while (test == false)
+            {
+                try
+                {
+                    Console.WriteLine("Quelle colonne voulez-vous sonder?");
+                    colonneAnal = int.Parse(Console.ReadLine());
+                    test = true;
+                    if (colonneAnal > mainGrille.GetLength(1))
+                        test = false;
+                }
+                catch (System.FormatException)
+                {
+                    Console.WriteLine("Ceci n'est pas un nombre entier!");
+                }
+            }
+            int[] analLigCol = { ligneAnal, colonneAnal };
+            return analLigCol;
+        }
+        static void inspecterGrille(string[,] GrilleAll, string[,] GrilleUser, int NumLigne, int NumColonne)
+        {
+            if (string.IsNullOrEmpty(GrilleAll[NumLigne, NumColonne]) && (string.IsNullOrEmpty(GrilleUser[NumLigne, NumColonne])))
+            {
+                GrilleUser[NumLigne, NumColonne] = "#";
+                GrilleAll[NumLigne, NumColonne] = "#";
+                for (int i = -1; i < 2; i++)
+                {
+                    for (int j = -1; j < 2; j++)
+                    {
+                        if (!(i == j && i == 0))
+                        {
+                            try
+                            {
+                                inspecterGrille(GrilleAll, GrilleUser, NumLigne + i, NumColonne + j);
+                            }
+                            catch (System.IndexOutOfRangeException) { }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                GrilleUser[NumLigne, NumColonne] = GrilleAll[NumLigne, NumColonne];
+                Console.WriteLine(GrilleUser[NumLigne, NumColonne]);
+            }
+        }
         static void PlayGame()
         {
             Console.WriteLine("Bienvenue dans la chasse au trésor !!!");
             string[,] mainGrille = creerGrille();
-            string[,] calque = mainGrille;
-            creerBombesTresors(mainGrille, 2, 3);
+            string[,] calque = new string[mainGrille.GetLength(0), mainGrille.GetLength(1)]; ;
+            AfficherGrille(calque);
+            int[] positionInspection = entrerInspectionUser(mainGrille);
+            creerBombesTresors(mainGrille, positionInspection[0], positionInspection[1]);
             for (int i = 0; i < mainGrille.GetLength(0); i++ )
             {
                 for (int j = 0; j < mainGrille.GetLength(1); j++)
@@ -179,7 +244,11 @@ namespace chasseAuxTresors
                     definirValeurCase(mainGrille ,i, j);
                 }
             }
-            AfficherGrille(mainGrille);
+            inspecterGrille(mainGrille, calque, positionInspection[0], positionInspection[1]);
+            AfficherGrille(calque);
+            positionInspection = entrerInspectionUser(mainGrille);
+            inspecterGrille(mainGrille, calque, positionInspection[0], positionInspection[1]);
+            AfficherGrille(calque);
         }
     }
 }
