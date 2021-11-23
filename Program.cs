@@ -79,7 +79,7 @@ namespace chasseAuxTresors
             }
 
         }
-        static void entrerInspectionUser(string[,] mainGrille)
+        static int[] entrerInspectionUser(string[,] mainGrille)
         {
             bool test = false;
             int ligneAnal = 0;
@@ -115,6 +115,8 @@ namespace chasseAuxTresors
                     Console.WriteLine("Ceci n'est pas un caractère");
                 }
             }
+            int[] analLigCol = { ligneAnal, colonneAnal };
+            return analLigCol;
 
         }
 
