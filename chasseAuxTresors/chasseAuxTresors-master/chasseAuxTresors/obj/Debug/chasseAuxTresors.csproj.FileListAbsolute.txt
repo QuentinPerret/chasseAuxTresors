@@ -1,0 +1,7 @@
+C:\Users\aporte005\Downloads\chasseAuxTresors-master\chasseAuxTresors-master\chasseAuxTresors\bin\Debug\chasseAuxTresors.exe.config
+C:\Users\aporte005\Downloads\chasseAuxTresors-master\chasseAuxTresors-master\chasseAuxTresors\bin\Debug\chasseAuxTresors.exe
+C:\Users\aporte005\Downloads\chasseAuxTresors-master\chasseAuxTresors-master\chasseAuxTresors\bin\Debug\chasseAuxTresors.pdb
+C:\Users\aporte005\Downloads\chasseAuxTresors-master\chasseAuxTresors-master\chasseAuxTresors\obj\Debug\chasseAuxTresors.csproj.AssemblyReference.cache
+C:\Users\aporte005\Downloads\chasseAuxTresors-master\chasseAuxTresors-master\chasseAuxTresors\obj\Debug\chasseAuxTresors.csproj.CoreCompileInputs.cache
+C:\Users\aporte005\Downloads\chasseAuxTresors-master\chasseAuxTresors-master\chasseAuxTresors\obj\Debug\chasseAuxTresors.exe
+C:\Users\aporte005\Downloads\chasseAuxTresors-master\chasseAuxTresors-master\chasseAuxTresors\obj\Debug\chasseAuxTresors.pdb
