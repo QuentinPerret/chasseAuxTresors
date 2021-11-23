@@ -50,7 +50,7 @@ namespace chasseAuxTresors
             }
             
             
-            string[,] grille = new string[nbLigne, nbColonne];
+            string[,] grille = new string[nbLigne*2, nbColonne];
             return grille;
             
         }
@@ -58,12 +58,24 @@ namespace chasseAuxTresors
         {
             for(int i=0;i<mainGrille.GetLength(0); i++)
             {
-                for(int j=0; j < mainGrille.GetLength(1); j++)
-                {
-                    mainGrille[i, j] = "|_";
-                    Console.Write(mainGrille[i, j]);
+                if (i % 2 == 0) 
+                { 
+                    for(int j=0; j < mainGrille.GetLength(1); j++)
+                    {
+                        mainGrille[i, j] = "| ";
+                        Console.Write(mainGrille[i, j]);
+                    }
+                    Console.WriteLine();
                 }
-                Console.WriteLine();
+                else
+                {
+                    for(int k=0; k<mainGrille.GetLength(1); k++)
+                    {
+                        mainGrille[i, k] = "_";
+                        Console.Write("|" + mainGrille[i, k]);
+                    }
+                    Console.WriteLine();
+                }
             }
 
         }
