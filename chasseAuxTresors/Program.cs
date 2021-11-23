@@ -35,15 +35,16 @@ namespace chasseAuxTresors
                     {
                         if (j % 2 == 0)
                         {
-                            /*if (string.IsNullOrEmpty(grille[indiceligne, indicecolonne]))
+                            if (string.IsNullOrEmpty(grille[indiceligne, indicecolonne]))
                             {
                                 Console.Write("  ");
                             }
                             else
-                            {*/
+                            {
                                 Console.Write(" " + grille[indiceligne, indicecolonne]);
-                                indicecolonne++;
-                            //}
+                                
+                            }
+                            indicecolonne++;
                         }
                         else
                         {
