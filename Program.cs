@@ -12,7 +12,7 @@ namespace chasseAuxTresors
         {
             Console.WriteLine("Bienvenue dans la chasse au trésor !!!");
             string[,] mainGrille = creerGrille();
-            afficherGrille(mainGrille);
+            afficherGrille1(mainGrille);
             string[,] calque = mainGrille;
             entrerInspectionUser(mainGrille);
         }
@@ -54,7 +54,7 @@ namespace chasseAuxTresors
             return grille;
             
         }
-        static void afficherGrille(string[,] mainGrille)
+        static void afficherGrille1(string[,] mainGrille)
         {
             for(int i=0;i<mainGrille.GetLength(0); i++)
             {
@@ -73,6 +73,31 @@ namespace chasseAuxTresors
                     {
                         mainGrille[i, k] = "|_";
                         Console.Write( mainGrille[i, k] + " ");
+                    }
+                    Console.WriteLine();
+                }
+            }
+
+        }
+        static void afficheGrilleN(string[,] mainGrille)
+        {
+            for (int i = 0; i < mainGrille.GetLength(0); i++)
+            {
+                if (i % 2 == 0)
+                {
+                    for (int j = 0; j < mainGrille.GetLength(1); j++)
+                    {
+                        
+                        Console.Write(mainGrille[i, j] + " ");
+                    }
+                    Console.WriteLine();
+                }
+                else
+                {
+                    for (int k = 0; k < mainGrille.GetLength(1); k++)
+                    {
+                        
+                        Console.Write(mainGrille[i, k] + " ");
                     }
                     Console.WriteLine();
                 }
