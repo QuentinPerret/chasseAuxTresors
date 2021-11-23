@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +14,7 @@ namespace chasseAuxTresors
             string[,] mainGrille = creerGrille();
             afficherGrille(mainGrille);
             string[,] calque = mainGrille;
-            entrerInspectionUser();
+            entrerInspectionUser(mainGrille);
         }
         static string[,] creerGrille()
         {
@@ -67,7 +67,7 @@ namespace chasseAuxTresors
             }
 
         }
-        static void entrerInspectionUser()
+        static void entrerInspectionUser(string[,] mainGrille)
         {
             bool test = false;
             int ligneAnal = 0;
@@ -79,6 +79,8 @@ namespace chasseAuxTresors
                     Console.WriteLine("Quelle ligne voulez-vous sonder?");
                     ligneAnal = int.Parse(Console.ReadLine());
                     test = true;
+                    if (ligneAnal > mainGrille.GetLength(0))
+                        test = false;
                 }
                 catch (System.FormatException)
                 {
@@ -93,12 +95,15 @@ namespace chasseAuxTresors
                     Console.WriteLine("Quelle colonne voulez-vous sonder?");
                     colonneAnal = int.Parse(Console.ReadLine());
                     test2 = true;
+                    if (colonneAnal > mainGrille.GetLength(1))
+                        test2 = false;
                 }
                 catch (System.FormatException)
                 {
                     Console.WriteLine("Ceci n'est pas un caractère");
                 }
             }
+
 
         }
 
