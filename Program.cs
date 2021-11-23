@@ -10,13 +10,17 @@ namespace chasseAuxTresors
     {
         static void Main(string[] args)
         {
-            PlayGame();
+            Console.WriteLine("Bienvenue dans la chasse au trésor !!!");
+            string[,] mainGrille = creerGrille();
+            afficherGrille(mainGrille);
+            string[,] calque = mainGrille;
+            entrerInspectionUser(mainGrille);
         }
         static string[,] creerGrille()
         {
             bool test = false;
-            int nbColonne = 0;
-            int nbLigne = 0;
+            int nbColonne = 0 ;
+            int nbLigne = 0 ;
             while (test == false)
             {
                 try
@@ -30,88 +34,89 @@ namespace chasseAuxTresors
                     Console.WriteLine("Ceci n'est pas un caractère");
                 }
             }
-            test = false;
-            while (test == false)
+            bool test2 = false;
+            while (test2 == false)
             {
                 try
                 {
                     Console.WriteLine("Combien de colonnes voulez-vous ?");
                     nbColonne = int.Parse(Console.ReadLine());
-                    test = true;
+                    test2 = true;
                 }
                 catch (System.FormatException)
                 {
                     Console.WriteLine("Ceci n'est pas un caractère");
                 }
             }
-            string[,] grille = new string[nbLigne, nbColonne];
+            
+            
+            string[,] grille = new string[nbLigne*2, nbColonne];
             return grille;
+            
         }
-        static void creerBombesTresors(string[,] GrilleAll , int entreeLigne1 , int entreeColonne1)
+        static void afficherGrille(string[,] mainGrille)
         {
-            Random RdNumber = new Random();
-            int NbLigne = GrilleAll.GetLength(0);
-            int NbColonne = GrilleAll.GetLength(1);
-            //Création des trésors 
-            int NbTresor = RdNumber.Next(1, 4);
-            for (int i = 0; i < NbTresor; i++)
+            for(int i=0;i<mainGrille.GetLength(0); i++)
             {
-                int NumLigne = 0;
-                int NumColonne = 0;
-                do
-                {
-                    NumLigne = RdNumber.Next(0, NbLigne);
-                    NumColonne = RdNumber.Next(0, NbColonne);
-                }
-                while (GrilleAll[NumLigne, NumColonne] == "T") ;
-                GrilleAll[NumLigne, NumColonne] = "T";
-            }
-            //Création des Bombes
-            int NbBombes = RdNumber.Next((NbLigne / 2), ((NbLigne * NbColonne) / 2 + 1));
-            for (int i = 0; i < NbTresor; i++)
-            {
-                int NumLigne = 0;
-                int NumColonne = 0;
-                do
-                {
-                    NumLigne = RdNumber.Next(0, NbLigne);
-                    NumColonne = RdNumber.Next(0, NbColonne);
-                }
-                while (GrilleAll[NumLigne, NumColonne] == "T" || GrilleAll[NumLigne, NumColonne] == "B" || (NumLigne == entreeLigne1 & NumColonne == entreeColonne1));
-                GrilleAll[NumLigne, NumColonne] = "B";
-            }
-        }
-        static void definirValeurCase(string[,] GrilleAll , int NumLigne, int NumColonne)
-        {
-            int valeur = 0;
-            try
-            {
-                for(int i = -1; i < 2; i++)
-                {
-                    for(int j  = -1; j< 2; j++)
+                if (i % 2 == 0) 
+                { 
+                    for(int j=0; j < mainGrille.GetLength(1); j++)
                     {
-                        if(GrilleAll[(NumLigne + i),(NumColonne + j)] == "T")
-                        {
-                            valeur += 2;
-                        }
-                        else if (GrilleAll[(NumLigne + i), (NumColonne + j)] == "B")
-                        {
-                            valeur += 1;
-                        }
+                        mainGrille[i, j] = "| ";
+                        Console.Write( mainGrille[i, j] + " " );
                     }
+                    Console.WriteLine();
                 }
-                if (valeur != 0)
+                else
                 {
-                    GrilleAll[NumLigne, NumColonne] = valeur.ToString();
+                    for(int k=0; k<mainGrille.GetLength(1); k++)
+                    {
+                        mainGrille[i, k] = "|_";
+                        Console.Write( mainGrille[i, k] + " ");
+                    }
+                    Console.WriteLine();
                 }
             }
-            catch(System.IndexOutOfRangeException) { }
+
         }
-        static void PlayGame()
+        static void entrerInspectionUser(string[,] mainGrille)
         {
-            Console.WriteLine("Bienvenue dans la chasse au trésor !!!");
-            string[,] mainGrille = creerGrille();
-            string[,] calque = mainGrille;
+            bool test = false;
+            int ligneAnal = 0;
+            int colonneAnal = 0;
+            while (test == false)
+            {
+                try
+                {
+                    Console.WriteLine("Quelle ligne voulez-vous sonder?");
+                    ligneAnal = int.Parse(Console.ReadLine());
+                    test = true;
+                    if (ligneAnal > mainGrille.GetLength(0))
+                        test = false;
+                }
+                catch (System.FormatException)
+                {
+                    Console.WriteLine("Ceci n'est pas un caractère");
+                }
+            }
+            bool test2 = false;
+            while (test2 == false)
+            {
+                try
+                {
+                    Console.WriteLine("Quelle colonne voulez-vous sonder?");
+                    colonneAnal = int.Parse(Console.ReadLine());
+                    test2 = true;
+                    if (colonneAnal > mainGrille.GetLength(1))
+                        test2 = false;
+                }
+                catch (System.FormatException)
+                {
+                    Console.WriteLine("Ceci n'est pas un caractère");
+                }
+            }
+
         }
+
     }
 }
