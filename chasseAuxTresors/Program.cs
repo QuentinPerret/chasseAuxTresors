@@ -44,7 +44,7 @@ namespace chasseAuxTresors
                                 /* cette condition affiche du rouge en arrière plan s'il y a
                                  * une bombe dans la case analysée*/
                                 Console.Write(" ");
-                                if (grille[indiceligne, indicecolonne] == "B")  
+                                if (grille[indiceligne, indicecolonne] == "B")
                                 {
                                     Console.BackgroundColor = ConsoleColor.Red;
                                 }
@@ -58,12 +58,19 @@ namespace chasseAuxTresors
                                     {
                                         Console.BackgroundColor = ConsoleColor.Black;
                                     }
-                                    
+
                                 }
                                 Console.Write(grille[indiceligne, indicecolonne]);
                                 Console.BackgroundColor = ConsoleColor.Black;
 
                             }
+                            indicecolonne++;
+                        }
+                        else
+                        {
+                            Console.Write(" |");
+                        }
+                    }
                     indiceligne++;
                 }
                 else
@@ -149,7 +156,7 @@ namespace chasseAuxTresors
                     NumLigne = RdNumber.Next(0, NbLigne);
                     NumColonne = RdNumber.Next(0, NbColonne);
                 }
-                while (GrilleAll[NumLigne, NumColonne] == "T" || GrilleAll[NumLigne, NumColonne] == "B" || (NumLigne == entreeLigne1 && NumColonne == entreeColonne1)); 
+                while (GrilleAll[NumLigne, NumColonne] == "T" || GrilleAll[NumLigne, NumColonne] == "B" || (NumLigne == entreeLigne1 && NumColonne == entreeColonne1));
                 // on fait attention ici que la bombe créer n'écrase pas un trésor ou une bombe mais aussi que la bombe créer ne corresponde pas à la première case inspecter par l'user
                 GrilleAll[NumLigne, NumColonne] = "B";
             }
@@ -276,11 +283,11 @@ namespace chasseAuxTresors
         {
             /*Fonction permettant de tester si une bombe est apparu est donc si l'user a perdu
             renvoie true si l'user a perdu, sinon renvoie false*/
-            for (int i = 0; i < GrilleAll.GetLength(0); i++) 
+            for (int i = 0; i < GrilleAll.GetLength(0); i++)
             {
-                for (int j = 0; j < GrilleAll.GetLength(1); j++) 
+                for (int j = 0; j < GrilleAll.GetLength(1); j++)
                 {
-                    if (GrilleUser[i, j] == "B") 
+                    if (GrilleUser[i, j] == "B")
                     {
                         return true;
                     }
@@ -308,7 +315,7 @@ namespace chasseAuxTresors
             inspecterGrille(mainGrille, calque, positionInspection[0], positionInspection[1]);
             AfficherGrille(calque);
             AfficherGrille(mainGrille);
-            while(testDefaite == false && testVictoire == false)
+            while (testDefaite == false && testVictoire == false)
             {
                 positionInspection = entrerInspectionUser(mainGrille);
                 inspecterGrille(mainGrille, calque, positionInspection[0], positionInspection[1]);
