@@ -48,22 +48,21 @@ namespace chasseAuxTresors
                                 {
                                     Console.BackgroundColor = ConsoleColor.Red;
                                 }
+                                else if (grille[indiceligne, indicecolonne] == "T")
+                                {
+                                    Console.BackgroundColor = ConsoleColor.Green;
+                                }
+                                else if (grille[indiceligne, indicecolonne] == "F")
+                                {
+                                    Console.BackgroundColor = ConsoleColor.DarkRed;
+                                }
                                 else
                                 {
-                                    if (grille[indiceligne, indicecolonne] == "T")
-                                    {
-                                        Console.BackgroundColor = ConsoleColor.Green;
-                                    }
-                                    else
-                                    {
-                                        Console.BackgroundColor = ConsoleColor.Black;
-                                    }
-
+                                    Console.BackgroundColor = ConsoleColor.Black;
                                 }
-                                Console.Write(grille[indiceligne, indicecolonne]);
-                                Console.BackgroundColor = ConsoleColor.Black;
-
                             }
+                            Console.Write(grille[indiceligne, indicecolonne]);
+                            Console.BackgroundColor = ConsoleColor.Black;
                             indicecolonne++;
                         }
                         else
@@ -196,7 +195,7 @@ namespace chasseAuxTresors
                 }
             }
         }
-        static int[] entrerInspectionUser(string[,] mainGrille)
+        static int[] entrerInspectionUser(string[,] mainGrille, string[,]calque)
         {
             bool test = false;
             int ligneAnal = 0;
@@ -214,6 +213,14 @@ namespace chasseAuxTresors
                 catch (System.FormatException)
                 {
                     Console.WriteLine("Ceci n'est pas un nombre entier!");
+                    Console.WriteLine("Voulez-vous poser un flag (O/N)");
+                    char rep = char.Parse(Console.ReadLine());
+                    if (rep == 'O')
+                    {
+                        int[] flagLigCol = flag(mainGrille);
+                        //entrerInspectionUser(mainGrille);
+                        créerFlag(flagLigCol, calque);
+                    }
                 }
             }
             test = false;
@@ -234,13 +241,13 @@ namespace chasseAuxTresors
             }
             int[] analLigCol = { ligneAnal, colonneAnal };
             return analLigCol;
+            
         }
         static void inspecterGrille(string[,] GrilleAll, string[,] GrilleUser, int NumLigne, int NumColonne)
         {
             if (string.IsNullOrEmpty(GrilleAll[NumLigne, NumColonne]))
             {
-                Console.WriteLine();
-                Console.Write(NumLigne + " , " + NumColonne);
+                
                 GrilleUser[NumLigne, NumColonne] = "#";
                 GrilleAll[NumLigne, NumColonne] = "#";
                 for (int i = -1; i < 2; i++)
@@ -295,6 +302,103 @@ namespace chasseAuxTresors
             }
             return false;
         }
+        static void Gagne()
+        {
+            int[] tab = new int[5];
+            for (int j = 0; j < 4; j++)
+                tab[j] = j;
+            for (int i = 0; i < tab.Length; i++)
+            {
+                Console.WriteLine();
+                if (i == 0)
+                    Console.BackgroundColor = ConsoleColor.Red;
+                if (i == 1)
+                    Console.BackgroundColor = ConsoleColor.Blue;
+                if (i == 2)
+                    Console.BackgroundColor = ConsoleColor.White;
+                if (i == 3)
+                    Console.BackgroundColor = ConsoleColor.Yellow;
+                if (i == 4)
+                    Console.BackgroundColor = ConsoleColor.Gray;
+
+                Console.Write(" ");
+
+            }
+        }
+        static void Defaite()
+        {
+            int cpt = 0;
+            do
+            {
+                char[] tab = { 'D', 'E', 'F', 'A', 'I', 'T', 'E' };
+                for (int i = 0; i < 10; i++)
+                {
+                    for (int j = 0; j < tab.Length; j++)
+                    {
+                        Console.BackgroundColor = ConsoleColor.Red;
+                        Console.Write(tab[j]);
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.Write(" ");
+
+                    }
+                }
+                cpt++;
+            } while (cpt < 50);
+            
+
+        }
+        static int[] flag(string[,] mainGrille)
+        {
+            bool test = false;
+            int ligneFlag = 0;
+            int colonneFlag = 0;
+            while (test == false)
+            {
+                try
+                {
+                    Console.WriteLine("dans quelle ligne voulez-vous poser un flag?");
+                    ligneFlag = int.Parse(Console.ReadLine());
+                    test = true;
+                    if (ligneFlag > mainGrille.GetLength(0))
+                        test = false;
+                }
+                catch (System.FormatException)
+                {
+                    Console.WriteLine("Ceci n'est pas un nombre entier!");
+                }
+            }
+                test = false;
+            while (test == false)
+            {
+                try
+                {
+                    Console.WriteLine("Dans quelle ligne voulez-vous poser un flag?");
+                    colonneFlag = int.Parse(Console.ReadLine());
+                    test = true;
+                    if (colonneFlag > mainGrille.GetLength(1))
+                        test = false;
+                }
+                catch (System.FormatException)
+                {
+                    Console.WriteLine("Ceci n'est pas un nombre entier!");
+                }
+                
+
+                
+            }
+            int[] flagLigCol = { ligneFlag, colonneFlag };
+            return flagLigCol;
+
+        }
+        static void créerFlag(int[] flagLigCol, string[,] calque)
+        {
+            Console.BackgroundColor = ConsoleColor.Red;
+            calque[flagLigCol[0], flagLigCol[1]]="F";
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.WriteLine(calque[flagLigCol[0], flagLigCol[1]]);
+            AfficherGrille(calque);
+            
+        }
         static void PlayGame()
         {
             Console.WriteLine("Bienvenue dans la chasse au trésor !!!");
@@ -303,7 +407,7 @@ namespace chasseAuxTresors
             bool testDefaite = false;
             bool testVictoire = false;
             AfficherGrille(calque);
-            int[] positionInspection = entrerInspectionUser(mainGrille);
+            int[] positionInspection = entrerInspectionUser(mainGrille, calque); 
             creerBombesTresors(mainGrille, positionInspection[0], positionInspection[1]);
             for (int i = 0; i < mainGrille.GetLength(0); i++)
             {
@@ -314,14 +418,21 @@ namespace chasseAuxTresors
             }
             inspecterGrille(mainGrille, calque, positionInspection[0], positionInspection[1]);
             AfficherGrille(calque);
-            AfficherGrille(mainGrille);
             while (testDefaite == false && testVictoire == false)
             {
-                positionInspection = entrerInspectionUser(mainGrille);
+                positionInspection = entrerInspectionUser(mainGrille,calque);
                 inspecterGrille(mainGrille, calque, positionInspection[0], positionInspection[1]);
                 AfficherGrille(calque);
                 testDefaite = testeLaDefaite(mainGrille, calque);
                 testVictoire = testeLaVictoire(mainGrille, calque);
+            }
+            if (testDefaite)
+            {
+                Defaite();
+            }
+            else
+            {
+                Gagne();
             }
         }
     }
