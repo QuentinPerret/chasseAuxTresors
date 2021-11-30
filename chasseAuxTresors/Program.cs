@@ -434,6 +434,39 @@ namespace chasseAuxTresors
             {
                 Gagne();
             }
+            RePlay();
+        }
+        static void RePlay()
+        {
+            bool test = false;
+            int compteurErrorUser = 0;
+            //Entrer user s'il veut rejouer ou non 
+            while (test == false)
+            {
+                Console.WriteLine("Voulez vous rejouer ? (répondre par O/N)");
+                string entryUser = Console.ReadLine();
+                entryUser  = entryUser.ToUpper();
+                if (entryUser == "O" || entryUser == "OUI" || entryUser == "YES" || entryUser == "Y") 
+                {
+                    test = true;
+                    Console.WriteLine("Une nouvelle partie va commencer ! ");
+                    PlayGame();
+                }
+                else if (entryUser == "N" || entryUser == "NON" || entryUser == "NO")
+                {
+                    Console.WriteLine("Merci d'avoir joué à notre jeu");
+                    test = true;
+                }
+                else
+                {
+                    compteurErrorUser++;
+                }
+                if (compteurErrorUser == 3)
+                {
+                    Console.WriteLine("Cela fait 3 fois que vous ne repondez pas à la question, le jeu va maintenant s'arrêter. Merci d'avoir joué !");
+                    test = true;
+                }
+            }
         }
     }
 }
