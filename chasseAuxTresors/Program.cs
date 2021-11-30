@@ -41,16 +41,29 @@ namespace chasseAuxTresors
                             }
                             else
                             {
-                                Console.Write(" " + grille[indiceligne, indicecolonne]);
+                                /* cette condition affiche du rouge en arrière plan s'il y a
+                                 * une bombe dans la case analysée*/
+                                Console.Write(" ");
+                                if (grille[indiceligne, indicecolonne] == "B")  
+                                {
+                                    Console.BackgroundColor = ConsoleColor.Red;
+                                }
+                                else
+                                {
+                                    if (grille[indiceligne, indicecolonne] == "T")
+                                    {
+                                        Console.BackgroundColor = ConsoleColor.Green;
+                                    }
+                                    else
+                                    {
+                                        Console.BackgroundColor = ConsoleColor.Black;
+                                    }
+                                    
+                                }
+                                Console.Write(grille[indiceligne, indicecolonne]);
+                                Console.BackgroundColor = ConsoleColor.Black;
 
                             }
-                            indicecolonne++;
-                        }
-                        else
-                        {
-                            Console.Write(" |");
-                        }
-                    }
                     indiceligne++;
                 }
                 else
