@@ -243,16 +243,15 @@ namespace chasseAuxTresors
                 GrilleUser[NumLigne, NumColonne] = GrilleAll[NumLigne, NumColonne];
             }
         }
-        static bool testeVictoire(string[,] GrilleAll, string[,] GrilleUser)
+        static bool testeLaVictoire(string[,] GrilleAll, string[,] GrilleUser)
         {
             /*Fonction permettant de tester si l'user a gagné sa partie
-            renvoie true si l'user a gané, sinon renvoie false*/
+            renvoie true si l'user a gagné, sinon renvoie false*/
             for (int i = 0; i < GrilleAll.GetLength(0); i++)
             {
                 for (int j = 0; j < GrilleAll.GetLength(1); j++)
                 {
-                    Console.WriteLine(GrilleUser[i, j] != "B" && GrilleUser[i, j] != GrilleAll[i, j]);
-                    if (GrilleUser[i, j] != "B" && GrilleUser[i, j] != GrilleAll[i, j])
+                    if (GrilleAll[i, j] != "B" && GrilleUser[i, j] != GrilleAll[i, j])
                     {
                         return false;
                     }
@@ -260,7 +259,7 @@ namespace chasseAuxTresors
             }
             return true;
         }
-        static bool testeDefaite(string[,] GrilleAll, string[,] GrilleUser)
+        static bool testeLaDefaite(string[,] GrilleAll, string[,] GrilleUser)
         {
             /*Fonction permettant de tester si une bombe est apparu est donc si l'user a perdu
             renvoie true si l'user a perdu, sinon renvoie false*/
@@ -301,10 +300,8 @@ namespace chasseAuxTresors
                 positionInspection = entrerInspectionUser(mainGrille);
                 inspecterGrille(mainGrille, calque, positionInspection[0], positionInspection[1]);
                 AfficherGrille(calque);
-                testDefaite = testeDefaite(mainGrille, calque);
-                //Console.WriteLine(testDefaite);
-                testVictoire = testeVictoire(mainGrille, calque);
-                //Console.WriteLine(testVictoire);
+                testDefaite = testeLaDefaite(mainGrille, calque);
+                testVictoire = testeLaVictoire(mainGrille, calque);
             }
         }
     }
