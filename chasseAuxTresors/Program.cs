@@ -1,8 +1,10 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace chasseAuxTresors
 {
@@ -12,114 +14,138 @@ namespace chasseAuxTresors
         {
             PlayGame();
         }
-
+        static bool stopGame = false;
         static void AfficherGrille(string[,] grille)
         {
             int indiceligne = 0;
             int indicecolonne = 0;
 
             Console.WriteLine();
-            Console.Write("  ");
+            Console.Write("    ");
             for (int i = 0; i < grille.GetLength(1); i++)
             {
-                Console.Write(" " + i + "  ");
-            }
-            for (int i = 0; i < (grille.GetLength(0) * 2 - 1); i++)
-            {
-                Console.WriteLine();
-                indicecolonne = 0;
-                if (i % 2 == 0)
+                if (i >= 10)
                 {
-                    Console.Write((i / 2) + " ");
-                    for (int j = 0; j < (grille.GetLength(1) * 2 - 1); j++)
-                    {
-                        if (j % 2 == 0)
-                        {
-                            if (string.IsNullOrEmpty(grille[indiceligne, indicecolonne]))
-                            {
-                                Console.Write("  ");
-                            }
-                            else
-                            {
-                                /* cette condition affiche du rouge en arrière plan s'il y a
-                                 * une bombe dans la case analysée*/
-                                Console.Write(" ");
-                                if (grille[indiceligne, indicecolonne] == "B")
-                                {
-                                    Console.BackgroundColor = ConsoleColor.Red;
-                                }
-                                else if (grille[indiceligne, indicecolonne] == "T")
-                                {
-                                    Console.BackgroundColor = ConsoleColor.Green;
-                                }
-                                else if (grille[indiceligne, indicecolonne] == "F")
-                                {
-                                    Console.BackgroundColor = ConsoleColor.DarkRed;
-                                }
-                                else
-                                {
-                                    Console.BackgroundColor = ConsoleColor.Black;
-                                }
-                            }
-                            Console.Write(grille[indiceligne, indicecolonne]);
-                            Console.BackgroundColor = ConsoleColor.Black;
-                            indicecolonne++;
-                        }
-                        else
-                        {
-                            Console.Write(" |");
-                        }
-                    }
-                    indiceligne++;
+                    Console.WriteLine(" " + i + "  ");
                 }
                 else
                 {
-                    Console.Write("  ");
-                    for (int j = 0; j <= (grille.GetLength(1) * 3 + grille.GetLength(1) - 2); j++)
-                    {
-                        Console.Write("-");
-                    }
+                    Console.Write(" " + i + "   ");
                 }
             }
-            Console.WriteLine();
+            for (int i = 0; i < (grille.GetLength(0)); i++)
+            {
+                Console.WriteLine();
+                indicecolonne = 0;
+                if (i >= 10)
+                {
+                    Console.WriteLine(i + " ");
+                }
+                else
+                {
+                    Console.Write(i + "  ");
+                }
+                for (int j = 0; j < (grille.GetLength(1)); j++)
+                {
+                    /* cette condition affiche du rouge en arrière plan s'il y a
+                     * une bombe dans la case analysée*/
+                    Console.Write(" ");
+                    if (grille[indiceligne, indicecolonne] == "B")
+                    {
+                        Console.BackgroundColor = ConsoleColor.Red;
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.Write(" " + grille[indiceligne, indicecolonne] + " ");
+                    }
+                    else if (grille[indiceligne, indicecolonne] == "T")
+                    {
+                        Console.BackgroundColor = ConsoleColor.DarkYellow;
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.Write(" " + grille[indiceligne, indicecolonne] + " ");
+                    }
+                    else if (grille[indiceligne, indicecolonne] != "#" && (!string.IsNullOrEmpty(grille[indiceligne, indicecolonne])))
+                    {
+                        Console.BackgroundColor = ConsoleColor.DarkBlue;
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.Write(" " + grille[indiceligne, indicecolonne] + " ");
+                    }
+                    else if (grille[indiceligne, indicecolonne] == "#")
+                    {
+                        Console.BackgroundColor = ConsoleColor.DarkGray;
+                        Console.Write("   ");
+                    }
+                    else
+                    {
+                        Console.BackgroundColor = ConsoleColor.White;
+                        Console.Write("   ");
+                    }
+                    indicecolonne++;
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    Console.Write(" ");
+                }
+                indiceligne++;
+                Console.WriteLine();
+            }
         }
-        static string[,] creerGrille()
+        static void SetEndGame(ref bool stopGame)
         {
+            stopGame = true;
+        }
+        static int[] AskDimGrille()
+        {
+            Console.Clear();
             //fonction créant un tableau de dimension entrer par l'user
-            bool test = false;
+            bool testEntryLigne = false;
             int nbColonne = 0;
             int nbLigne = 0;
+            int nbErrorUser = 0;
             //Entrer user du nombre de ligne dans la grille
-            while (test == false)
+            while (testEntryLigne == false)
             {
                 try
                 {
                     Console.WriteLine("Combien de lignes voulez-vous ?");
                     nbLigne = int.Parse(Console.ReadLine());
-                    test = true;
+                    testEntryLigne = true;
                 }
                 catch (System.FormatException)
                 {
-                    Console.WriteLine("Ceci n'est pas un caractère");
+                    Console.WriteLine("Ceci n'est pas un nombre entier de ligne! Réessayer!");
+                    nbErrorUser++;
+                    if(nbErrorUser == 3)
+                    {
+                        Console.WriteLine("Cela fait 3 fois que vous ne repondez pas à la question, le jeu va maintenant s'arrêter. Merci d'avoir joué !");
+                        SetEndGame(ref stopGame);
+                        testEntryLigne = true;
+                        Console.ReadLine();
+                    }
                 }
             }
-            test = false;
+            bool testEntryCol = false;
+            nbErrorUser = 0;
             //Entrer user du nombre de colonne dans la grille
-            while (test == false)
+            while (testEntryCol == false && stopGame ==false)
             {
                 try
                 {
                     Console.WriteLine("Combien de colonnes voulez-vous ?");
                     nbColonne = int.Parse(Console.ReadLine());
-                    test = true;
+                    testEntryCol = true;
                 }
                 catch (System.FormatException)
                 {
                     Console.WriteLine("Ceci n'est pas un caractère");
+                    nbErrorUser++;
+                    if (nbErrorUser == 3)
+                    {
+                        Console.WriteLine("Cela fait 3 fois que vous ne repondez pas à la question, le jeu va maintenant s'arrêter. Merci d'avoir joué !");
+                        SetEndGame(ref stopGame);
+                        testEntryCol=true;
+                        Console.ReadLine();
+                    }
                 }
             }
-            string[,] grille = new string[nbLigne, nbColonne];
-            return grille;
+            int[] DimGrille = {nbLigne,nbColonne};
+            return DimGrille;
         }
         static void creerBombesTresors(string[,] GrilleAll, int entreeLigne1, int entreeColonne1)
         {
@@ -144,8 +170,8 @@ namespace chasseAuxTresors
                 GrilleAll[NumLigne, NumColonne] = "T";
             }
             //Création des Bombes
-            //int NbBombes = RdNumber.Next((NbLigne / 2), ((NbLigne * NbColonne) / 2 + 1));
-            int NbBombes = RdNumber.Next(1, 4);
+            //
+            int NbBombes = RdNumber.Next((NbLigne / 2), ((NbLigne * NbColonne) / 2 + 1));
             for (int i = 0; i < NbBombes; i++)
             {
                 int NumLigne = 0;
@@ -195,59 +221,74 @@ namespace chasseAuxTresors
                 }
             }
         }
-        static int[] entrerInspectionUser(string[,] mainGrille, string[,]calque)
+        static int[] entrerInspectionUser(string[,] mainGrille)
         {
-            bool test = false;
+            bool testEntry = false;
             int ligneAnal = 0;
             int colonneAnal = 0;
-            while (test == false)
+            int nbErrorUser = 0;
+            while (testEntry == false)
             {
                 try
                 {
                     Console.WriteLine("Quelle ligne voulez-vous sonder?");
                     ligneAnal = int.Parse(Console.ReadLine());
-                    test = true;
-                    if (ligneAnal > mainGrille.GetLength(0))
-                        test = false;
+                    testEntry = true;
+                    if (ligneAnal >= mainGrille.GetLength(0))
+                    {
+                        Console.WriteLine("Ceci n'est pas une ligne existante. Réessayer!");
+                        nbErrorUser++;
+                        testEntry = false;
+                    }
+                    if (nbErrorUser == 3)
+                    {
+                        Console.WriteLine("Cela fait 3 fois que vous ne repondez pas à la question, le jeu va maintenant s'arrêter. Merci d'avoir joué !");
+                        SetEndGame(ref stopGame);
+                        testEntry = true;
+                        Console.ReadLine();
+                    }
                 }
                 catch (System.FormatException)
                 {
                     Console.WriteLine("Ceci n'est pas un nombre entier!");
-                    Console.WriteLine("Voulez-vous poser un flag (O/N)");
-                    char rep = char.Parse(Console.ReadLine());
-                    if (rep == 'O')
-                    {
-                        int[] flagLigCol = flag(mainGrille);
-                        //entrerInspectionUser(mainGrille);
-                        créerFlag(flagLigCol, calque);
-                    }
+                    nbErrorUser++;
                 }
             }
-            test = false;
-            while (test == false)
+            testEntry = false;
+            while (testEntry == false && stopGame == false)
             {
                 try
                 {
                     Console.WriteLine("Quelle colonne voulez-vous sonder?");
                     colonneAnal = int.Parse(Console.ReadLine());
-                    test = true;
-                    if (colonneAnal > mainGrille.GetLength(1))
-                        test = false;
+                    testEntry = true;
+                    if (ligneAnal >= mainGrille.GetLength(0))
+                    {
+                        Console.WriteLine("Ceci n'est pas une colonne existante. Réessayer!");
+                        nbErrorUser++;
+                        testEntry = false;
+                    }
+                    if (nbErrorUser == 3)
+                    {
+                        Console.WriteLine("Cela fait 3 fois que vous ne repondez pas à la question, le jeu va maintenant s'arrêter. Merci d'avoir joué !");
+                        SetEndGame(ref stopGame);
+                        testEntry = true;
+                        Console.ReadLine();
+                    }
                 }
                 catch (System.FormatException)
                 {
                     Console.WriteLine("Ceci n'est pas un nombre entier!");
+                    nbErrorUser++;
                 }
             }
             int[] analLigCol = { ligneAnal, colonneAnal };
             return analLigCol;
-            
         }
         static void inspecterGrille(string[,] GrilleAll, string[,] GrilleUser, int NumLigne, int NumColonne)
         {
             if (string.IsNullOrEmpty(GrilleAll[NumLigne, NumColonne]))
             {
-                
                 GrilleUser[NumLigne, NumColonne] = "#";
                 GrilleAll[NumLigne, NumColonne] = "#";
                 for (int i = -1; i < 2; i++)
@@ -302,141 +343,203 @@ namespace chasseAuxTresors
             }
             return false;
         }
-        static void Gagne()
+        static bool CheckResult(string[,] mainGrille , string[,] calque)
         {
-            int[] tab = new int[5];
-            for (int j = 0; j < 4; j++)
-                tab[j] = j;
-            for (int i = 0; i < tab.Length; i++)
+            if(testeLaDefaite(mainGrille , calque))
             {
-                Console.WriteLine();
-                if (i == 0)
-                    Console.BackgroundColor = ConsoleColor.Red;
-                if (i == 1)
-                    Console.BackgroundColor = ConsoleColor.Blue;
-                if (i == 2)
-                    Console.BackgroundColor = ConsoleColor.White;
-                if (i == 3)
-                    Console.BackgroundColor = ConsoleColor.Yellow;
-                if (i == 4)
-                    Console.BackgroundColor = ConsoleColor.Gray;
-
-                Console.Write(" ");
-
+                Explosion();
+                YouLoose();
+                return true;
             }
-        }
-        static void Defaite()
-        {
-            int cpt = 0;
-            do
+            else if (testeLaVictoire(mainGrille, calque))
             {
-                char[] tab = { 'D', 'E', 'F', 'A', 'I', 'T', 'E' };
-                for (int i = 0; i < 10; i++)
-                {
-                    for (int j = 0; j < tab.Length; j++)
-                    {
-                        Console.BackgroundColor = ConsoleColor.Red;
-                        Console.Write(tab[j]);
-                        Console.BackgroundColor = ConsoleColor.Black;
-                        Console.Write(" ");
-
-                    }
-                }
-                cpt++;
-            } while (cpt < 50);
-            
-
-        }
-        static int[] flag(string[,] mainGrille)
-        {
-            bool test = false;
-            int ligneFlag = 0;
-            int colonneFlag = 0;
-            while (test == false)
-            {
-                try
-                {
-                    Console.WriteLine("dans quelle ligne voulez-vous poser un flag?");
-                    ligneFlag = int.Parse(Console.ReadLine());
-                    test = true;
-                    if (ligneFlag > mainGrille.GetLength(0))
-                        test = false;
-                }
-                catch (System.FormatException)
-                {
-                    Console.WriteLine("Ceci n'est pas un nombre entier!");
-                }
+                Victory();
+                return true;
             }
-                test = false;
-            while (test == false)
-            {
-                try
-                {
-                    Console.WriteLine("Dans quelle ligne voulez-vous poser un flag?");
-                    colonneFlag = int.Parse(Console.ReadLine());
-                    test = true;
-                    if (colonneFlag > mainGrille.GetLength(1))
-                        test = false;
-                }
-                catch (System.FormatException)
-                {
-                    Console.WriteLine("Ceci n'est pas un nombre entier!");
-                }
-                
-
-                
-            }
-            int[] flagLigCol = { ligneFlag, colonneFlag };
-            return flagLigCol;
-
+            return false;
         }
-        static void créerFlag(int[] flagLigCol, string[,] calque)
+        static void PlayerMove(string[,] mainGrille, string[,] calque)
         {
-            Console.BackgroundColor = ConsoleColor.Red;
-            calque[flagLigCol[0], flagLigCol[1]]="F";
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.WriteLine(calque[flagLigCol[0], flagLigCol[1]]);
-            AfficherGrille(calque);
-            
-        }
-        static void PlayGame()
-        {
-            Console.WriteLine("Bienvenue dans la chasse au trésor !!!");
-            string[,] mainGrille = creerGrille();
-            string[,] calque = new string[mainGrille.GetLength(0), mainGrille.GetLength(1)];
-            bool testDefaite = false;
-            bool testVictoire = false;
-            AfficherGrille(calque);
-            int[] positionInspection = entrerInspectionUser(mainGrille, calque); 
-            creerBombesTresors(mainGrille, positionInspection[0], positionInspection[1]);
-            for (int i = 0; i < mainGrille.GetLength(0); i++)
-            {
-                for (int j = 0; j < mainGrille.GetLength(1); j++)
-                {
-                    definirValeurCase(mainGrille, i, j);
-                }
-            }
-            inspecterGrille(mainGrille, calque, positionInspection[0], positionInspection[1]);
-            AfficherGrille(calque);
-            while (testDefaite == false && testVictoire == false)
-            {
-                positionInspection = entrerInspectionUser(mainGrille,calque);
-                inspecterGrille(mainGrille, calque, positionInspection[0], positionInspection[1]);
+                Console.Clear();
                 AfficherGrille(calque);
-                testDefaite = testeLaDefaite(mainGrille, calque);
-                testVictoire = testeLaVictoire(mainGrille, calque);
-            }
-            if (testDefaite)
-            {
-                Defaite();
-            }
-            else
-            {
-                Gagne();
-            }
-            RePlay();
+                int [] CoordCase = entrerInspectionUser(mainGrille);
+                inspecterGrille(mainGrille, calque, CoordCase[0], CoordCase[1]);
         }
-        static void RePlay()
+        static void Explosion()
+        {
+            Console.Clear();
+            Console.WriteLine("Boom");
+            Console.ReadLine();
+        }
+        static void AskLoadSave(string[,] mainGrille , string[,]calque)
+        {
+            string entryUser = "";
+            bool testSave = false;
+            int nbErrorUser = 0;
+            while (testSave == false)
+            {
+                Console.WriteLine("Avant de quiter voulez vous enregistrer votre partie ? (répondre par O/N)");
+                entryUser = Console.ReadLine();
+                entryUser = entryUser.ToUpper();
+                if (entryUser == "O" || entryUser == "OUI" || entryUser == "YES" || entryUser == "Y")
+                {
+                    testSave = true;
+                    Console.Clear();
+                    Serialization(mainGrille, calque);
+
+                }
+                else if (entryUser == "N" || entryUser == "NON" || entryUser == "NO")
+                {
+                    Console.WriteLine("Merci d'avoir joué à notre jeu");
+                    testSave = true;
+                    Console.ReadLine();
+                }
+                else
+                {
+                    nbErrorUser++;
+                    testSave = false;
+                }
+                if (nbErrorUser == 3)
+                {
+                    Console.WriteLine("Cela fait 3 fois que vous ne repondez pas à la question, le jeu va maintenant s'arrêter. Merci d'avoir joué !");
+                    testSave = true;
+                }
+            }
+        }
+        static string[][,] CreateNewGame()
+        {
+            int[] DimGrille = AskDimGrille();
+            if (!stopGame)
+            {
+                string[,] mainGrille = new string[DimGrille[0], DimGrille[1]];
+                string[,] calque = new string[DimGrille[0], DimGrille[1]];
+                Console.Clear();
+                AfficherGrille(calque);
+                int[] positionInspection = entrerInspectionUser(mainGrille);
+                creerBombesTresors(mainGrille, positionInspection[0], positionInspection[1]);
+                SetAllCasesValues(mainGrille);
+                inspecterGrille(mainGrille, calque, positionInspection[0], positionInspection[1]);
+
+                string[][,] BothGrille = { mainGrille, calque };
+                return BothGrille;
+            }
+            return null;
+        }
+        static string[][,] ReloadGame()
+        {
+            StreamReader game = new StreamReader(@"C:\Users\quent\OneDrive\Bureau\ENSC\C#\chasseAuxTresors\chasseAuxTresors\bin\Release\Test.txt");
+            int Nbligne = int.Parse(game.ReadLine());
+            int NbColonne = int.Parse(game.ReadLine());
+            int NbCase = NbColonne * Nbligne;
+            string[,] mainGrille = new string[Nbligne, NbColonne];
+            string[,] calque = new string[Nbligne, NbColonne];
+
+
+            int indLigne = 0;
+            int indCol = 0;
+
+            for (int i = 0; i < NbCase; i++)
+            {
+                Console.WriteLine(indLigne);
+                Console.WriteLine(indCol);
+                mainGrille[indLigne, indCol] = game.ReadLine();
+                indCol++;
+                if (indCol == Nbligne)
+                {
+                    indCol = 0;
+                    indLigne++;
+                }
+            }
+            indLigne = 0;
+            indCol = 0;
+
+            for (int i = 0; i < NbCase; i++)
+            {
+                calque[indLigne, indCol] = game.ReadLine();
+                indCol++;
+                if (indCol == Nbligne)
+                {
+                    indCol = 0;
+                    indLigne++;
+                }
+            }
+            string[][,] BothGrille = { mainGrille, calque };
+            return BothGrille;
+        }
+        static bool AskReloadSave()
+        {
+            string entryUser = "";
+            bool testSave = false;
+            int nbErrorUser = 0;
+            while (testSave == false)
+            {
+                Console.WriteLine("Voulez vous reprendre votre dernière partie enregistré la où vous l'aviez laissé (répondre par O/N)");
+                entryUser = Console.ReadLine();
+                entryUser = entryUser.ToUpper();
+                if (entryUser == "O" || entryUser == "OUI" || entryUser == "YES" || entryUser == "Y")
+                {
+                    testSave = true;
+                    return true;
+
+                }
+                else if (entryUser == "N" || entryUser == "NON" || entryUser == "NO")
+                {
+                    Console.WriteLine("Une nouvelle partie va etre créer!");
+                    testSave = true;
+                    return false;
+                }
+                else
+                {
+                    nbErrorUser++;
+                    testSave = false;
+                }
+                if (nbErrorUser == 3)
+                {
+                    Console.WriteLine("Cela fait 3 fois que vous ne repondez pas à la question, Une nouvelle partie va etre créer !");
+                    Console.ReadLine();
+                    testSave = true;
+
+                }
+            }
+            return false;
+        }
+        static bool AskStopGame()
+        {
+            bool testGame = false;
+            int compteurErrorUser = 0;
+            while (testGame == false)
+            {
+                Console.WriteLine("Voulez vous arreter de jouer ? (répondre par O/N)");
+                string entryUser = Console.ReadLine();
+                entryUser = entryUser.ToUpper();
+                if (entryUser == "O" || entryUser == "OUI" || entryUser == "YES" || entryUser == "Y")
+                {
+                    Console.WriteLine("Merci d'avoir joué à notre jeu");
+                    testGame = true;
+                    Console.Clear();
+                    return true;
+
+                }
+                else if (entryUser == "N" || entryUser == "NON" || entryUser == "NO")
+                {
+                    testGame = true;
+                    Console.ReadLine();
+                    return false;
+                }
+                else
+                {
+                    compteurErrorUser++;
+                }
+                if (compteurErrorUser == 3)
+                {
+                    Console.WriteLine("Cela fait 3 fois que vous ne repondez pas à la question, le jeu va maintenant s'arrêter. Merci d'avoir joué !");
+                    testGame = true;
+                    return true;
+                }
+            }
+            return false;
+        }
+        static bool AskReplayGame()
         {
             bool test = false;
             int compteurErrorUser = 0;
@@ -445,17 +548,20 @@ namespace chasseAuxTresors
             {
                 Console.WriteLine("Voulez vous rejouer ? (répondre par O/N)");
                 string entryUser = Console.ReadLine();
-                entryUser  = entryUser.ToUpper();
-                if (entryUser == "O" || entryUser == "OUI" || entryUser == "YES" || entryUser == "Y") 
+                entryUser = entryUser.ToUpper();
+                if (entryUser == "O" || entryUser == "OUI" || entryUser == "YES" || entryUser == "Y")
                 {
                     test = true;
+                    Console.Clear();
                     Console.WriteLine("Une nouvelle partie va commencer ! ");
-                    PlayGame();
+                    return true;
                 }
                 else if (entryUser == "N" || entryUser == "NON" || entryUser == "NO")
                 {
                     Console.WriteLine("Merci d'avoir joué à notre jeu");
                     test = true;
+                    Console.ReadLine();
+                    return false;
                 }
                 else
                 {
@@ -465,7 +571,162 @@ namespace chasseAuxTresors
                 {
                     Console.WriteLine("Cela fait 3 fois que vous ne repondez pas à la question, le jeu va maintenant s'arrêter. Merci d'avoir joué !");
                     test = true;
+                    return false;
                 }
+            }
+            return false;
+        }
+        static void Victory()
+        {
+            Console.Clear();
+            Console.WriteLine(@"                             __   __  __     ______    ______   ______    ______     __  __    
+                            /\ \ / / /\ \   /\  ___\  /\__  _\ /\  __ \  /\  == \   /\ \_\ \   
+                            \ \ \'/  \ \ \  \ \ \____ \/_/\ \/ \ \ \/\ \ \ \  __<   \ \____ \  
+                             \ \_|    \ \_\  \ \_____\   \ \_\  \ \_____\ \ \_\ \_\  \/\_____\ 
+                              \/_/     \/_/   \/ ___ /    \/_/   \/ ___ /  \/_/ /_/   \/_____/
+");
+            Console.ReadLine();
+        }
+        static void YouLoose()
+        {
+            Console.Clear();
+            Console.WriteLine(@"                     __  __     ______     __  __        __         ______     ______     ______     ______    
+                    /\ \_\ \   /\  __ \   /\ \/\ \      /\ \       /\  __ \   /\  __ \   /\  ___\   /\  ___\   
+                    \ \____ \  \ \ \/\ \  \ \ \_\ \     \ \ \____  \ \ \/\ \  \ \ \/\ \  \ \___  \  \ \  __\   
+                     \/\_____\  \ \_____\  \ \_____\     \ \_____\  \ \_____\  \ \_____\  \/\_____\  \ \_____\ 
+                      \/_____/   \/_____/   \/_____/      \/_____/   \/_____/   \/_____/   \/_____/   \/_____/
+");
+            Console.ReadLine();
+        }
+        static void Welcome()
+        {
+            Console.Clear();
+            Console.WriteLine(@"
+                                    ____  _                                     
+                                   / __ )(_)__  ____ _   _____  ____  __  _____ 
+                                  / __  / / _ \/ __ \ | / / _ \/ __ \/ / / / _ \
+                                 / /_/ / /  __/ / / / |/ /  __/ / / / /_/ /  __/
+                                /_____/_/\___/_/ /_/|___/\___/_/ /_/\__,_/\___/ 
+
+");
+            Console.WriteLine(@"
+
+                                                 __                
+                                            ____/ /___ _____  _____
+                                           / __  / __ `/ __ \/ ___/
+                                          / /_/ / /_/ / / / (__  ) 
+                                          \__,_/\__,_/_/ /_/____/  
+
+");
+            Console.WriteLine(@"
+
+      __              __                                                __        __                      
+     / /___ _   _____/ /_  ____ ______________     ____ ___  ___  __   / /_______/_/ _________  __________
+    / / __ `/  / ___/ __ \/ __ `/ ___/ ___/ _ \   / __ `/ / / / |/_/  / __/ ___/ _ \/ ___/ __ \/ ___/ ___/
+   / / /_/ /  / /__/ / / / /_/ (__  |__  )  __/  / /_/ / /_/ />  <   / /_/ /  /  __(__  ) /_/ / /  (__  ) 
+  /_/\__,_/   \___/_/ /_/\__,_/____/____/\___/   \__,_/\__,_/_/|_|   \__/_/   \___/____/\____/_/  /____/  
+");
+            Console.ReadLine();
+        }
+        static void Rules()
+        {
+            Console.Clear();
+            Console.WriteLine("Rules");
+            Console.ReadLine();
+        }
+        static void SetAllCasesValues(string[,]mainGrille)
+        {
+            for (int i = 0; i < mainGrille.GetLength(0); i++)
+            {
+                for (int j = 0; j < mainGrille.GetLength(1); j++)
+                {
+                    definirValeurCase(mainGrille, i, j);
+                }
+            }
+        }
+        static string[][,] PreGame()
+        {
+            Welcome();
+            Rules();
+            if (AskReloadSave())
+            {
+                return  ReloadGame();
+            }
+            else if (!stopGame)
+            {
+                return CreateNewGame();
+            }
+            return null;
+        }
+        static void MidGame(string[,] mainGrille, string[,] calque)
+        {
+
+            while (!CheckResult(mainGrille, calque) && !stopGame)
+            {
+                PlayerMove(mainGrille, calque);
+            } 
+        }
+        static void EndGame()
+        {
+            if (AskReplayGame())
+            {
+                RePlay();
+            }
+            else
+            {
+                //add possibilté menu ou arret
+            }
+        }
+        static void PlayGame()
+        {
+            string[][,] BothGrille = PreGame();
+            if (!stopGame)
+            {
+                string[,] mainGrille = BothGrille[0];
+                string[,] calque = BothGrille[1];
+                MidGame(mainGrille, calque);
+            }
+            EndGame();
+        }
+        static void RePlay()
+        {
+            string[][,] BothGrille = CreateNewGame();
+            if (!stopGame)
+            {
+                string[,] mainGrille = BothGrille[0];
+                string[,] calque = BothGrille[1];
+                MidGame(mainGrille, calque);
+            }
+            EndGame();
+        }
+        static void Serialization(string[,] maingrille , string[,] calque)
+        {
+            //Pass the filepath and filename to the StreamWriter Constructor
+            StreamWriter game = new StreamWriter(@"C:\Users\quent\OneDrive\Bureau\ENSC\C#\chasseAuxTresors\chasseAuxTresors\bin\Release\Test.txt");
+            try
+            {
+                game.WriteLine(maingrille.GetLength(0));
+                game.WriteLine(maingrille.GetLength(1));
+                for (int i = 0; i < maingrille.GetLength(0); i++)
+                {
+                    for (int j  = 0; j < maingrille .GetLength(1); j++)
+                    {
+                        game.WriteLine(maingrille[i,j]);
+                    }
+                }
+                for (int i = 0; i < maingrille.GetLength(0); i++)
+                {
+                    for (int j = 0; j < maingrille.GetLength(1); j++)
+                    {
+                        game.WriteLine(calque[i, j]);
+                    }
+                }
+                game.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Une erreur dans l'enregistrement de votre partie est survenue: " + e.Message);
+                game.Dispose();
             }
         }
     }
