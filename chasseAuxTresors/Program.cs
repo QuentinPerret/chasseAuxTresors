@@ -723,7 +723,7 @@ namespace chasseAuxTresors
                 }
                 game.Close();
             }
-            catch (Exception e)
+            catch (Exception e)//
             {
                 Console.WriteLine("Une erreur dans l'enregistrement de votre partie est survenue: " + e.Message);
                 game.Dispose();
