@@ -15,6 +15,7 @@ namespace chasseAuxTresors
             PlayGame();
         }
         static bool stopGame = false;
+        static bool testFlag = false;
         static void AfficherGrille(string[,] grille)
         {
             int indiceligne = 0;
@@ -59,6 +60,12 @@ namespace chasseAuxTresors
                     else if (grille[indiceligne, indicecolonne] == "T")
                     {
                         Console.BackgroundColor = ConsoleColor.DarkYellow;
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.Write(" " + grille[indiceligne, indicecolonne] + " ");
+                    }
+                    else if (grille[indiceligne,indicecolonne] == "F")
+                    {
+                        Console.BackgroundColor = ConsoleColor.DarkRed;
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.Write(" " + grille[indiceligne, indicecolonne] + " ");
                     }
@@ -221,7 +228,43 @@ namespace chasseAuxTresors
                 }
             }
         }
-        static int[] entrerInspectionUser(string[,] mainGrille)
+        static bool AskNextMove()
+        {
+            Console.WriteLine("Voulez-vous continuer de jouer?");
+            bool testEntry = false;
+            int nbErrorUser = 0;
+            while (testEntry == false)
+            {
+                string entryUser = Console.ReadLine();
+                entryUser = entryUser.ToUpper();
+                Console.WriteLine("entry user = " + entryUser);
+                if(entryUser == "O" || entryUser == "OUI" || entryUser == "YES" || entryUser == "Y" || string.IsNullOrEmpty(entryUser))
+                {
+                    return true;
+                }
+                else if (entryUser == "N" || entryUser == "NON" || entryUser == "NO" || entryUser == "Y")
+                {
+                    return false;
+                }
+                else if (entryUser == "F" || entryUser == "FLAG")
+                {
+                    testFlag = true;
+                    return true;
+                }
+                else if (nbErrorUser == 3)
+                {
+                    Console.WriteLine("Cela fait 3 fois que vous ne repondez pas à la question, le jeu va maintenant s'arrêter. Merci d'avoir joué !");
+                    testEntry = true;
+                }
+                else
+                {
+                    nbErrorUser++;
+                    testEntry = false;
+                }
+            }
+            return false;
+        }
+        static int[] entrerInspectionUser(string[,] mainGrille, string[,] calque)
         {
             bool testEntry = false;
             int ligneAnal = 0;
@@ -231,7 +274,7 @@ namespace chasseAuxTresors
             {
                 try
                 {
-                    Console.WriteLine("Quelle ligne voulez-vous sonder?");
+                    Console.WriteLine("Quelle ligne voulez-vous inspecter?");
                     ligneAnal = int.Parse(Console.ReadLine());
                     testEntry = true;
                     if (ligneAnal >= mainGrille.GetLength(0))
@@ -259,7 +302,7 @@ namespace chasseAuxTresors
             {
                 try
                 {
-                    Console.WriteLine("Quelle colonne voulez-vous sonder?");
+                    Console.WriteLine("Quelle colonne voulez-vous inspecter?");
                     colonneAnal = int.Parse(Console.ReadLine());
                     testEntry = true;
                     if (ligneAnal >= mainGrille.GetLength(0))
@@ -282,8 +325,16 @@ namespace chasseAuxTresors
                     nbErrorUser++;
                 }
             }
-            int[] analLigCol = { ligneAnal, colonneAnal };
-            return analLigCol;
+            if (calque[ligneAnal, colonneAnal] == "F" || string.IsNullOrEmpty(calque[ligneAnal,colonneAnal]))
+            {
+                int[] analLigCol = { ligneAnal, colonneAnal };
+                return analLigCol;
+            }
+            else
+            {
+                Console.WriteLine("Cette case n'est pas vide. Veuillez entrer une case vide");
+                return entrerInspectionUser(mainGrille, calque);
+            }
         }
         static void inspecterGrille(string[,] GrilleAll, string[,] GrilleUser, int NumLigne, int NumColonne)
         {
@@ -360,10 +411,71 @@ namespace chasseAuxTresors
         }
         static void PlayerMove(string[,] mainGrille, string[,] calque)
         {
-                Console.Clear();
-                AfficherGrille(calque);
-                int [] CoordCase = entrerInspectionUser(mainGrille);
+                int [] CoordCase = entrerInspectionUser(mainGrille,calque);
                 inspecterGrille(mainGrille, calque, CoordCase[0], CoordCase[1]);
+        }
+        static void FlagMove(string[,] mainGrille, string[,] calque)
+        {
+            bool testEntry = false;
+            int ligneAnal = 0;
+            int colonneAnal = 0;
+            int nbErrorUser = 0;
+            while (testEntry == false)
+            {
+                try
+                {
+                    Console.WriteLine("A quel ligne voulez-vous poser votre flag?");
+                    ligneAnal = int.Parse(Console.ReadLine());
+                    testEntry = true;
+                    if (ligneAnal >= mainGrille.GetLength(0))
+                    {
+                        Console.WriteLine("Ceci n'est pas une ligne existante. Réessayer!");
+                        nbErrorUser++;
+                        testEntry = false;
+                    }
+                    if (nbErrorUser == 3)
+                    {
+                        Console.WriteLine("Cela fait 3 fois que vous ne repondez pas à la question, le jeu va maintenant s'arrêter. Merci d'avoir joué !");
+                        SetEndGame(ref stopGame);
+                        testEntry = true;
+                        Console.ReadLine();
+                    }
+                }
+                catch (System.FormatException)
+                {
+                    Console.WriteLine("Ceci n'est pas un nombre entier!");
+                    nbErrorUser++;
+                }
+            }
+            testEntry = false;
+            while (testEntry == false && stopGame == false)
+            {
+                try
+                {
+                    Console.WriteLine("A quel colonne voulez-vous poser votre flag?");
+                    colonneAnal = int.Parse(Console.ReadLine());
+                    testEntry = true;
+                    if (ligneAnal >= mainGrille.GetLength(0))
+                    {
+                        Console.WriteLine("Ceci n'est pas une colonne existante. Réessayer!");
+                        nbErrorUser++;
+                        testEntry = false;
+                    }
+                    if (nbErrorUser == 3)
+                    {
+                        Console.WriteLine("Cela fait 3 fois que vous ne repondez pas à la question, le jeu va maintenant s'arrêter. Merci d'avoir joué !");
+                        SetEndGame(ref stopGame);
+                        testEntry = true;
+                        Console.ReadLine();
+                    }
+                }
+                catch (System.FormatException)
+                {
+                    Console.WriteLine("Ceci n'est pas un nombre entier!");
+                    nbErrorUser++;
+                }
+            }
+            calque[ligneAnal, colonneAnal] = "F";
         }
         static void Explosion()
         {
@@ -415,7 +527,7 @@ namespace chasseAuxTresors
                 string[,] calque = new string[DimGrille[0], DimGrille[1]];
                 Console.Clear();
                 AfficherGrille(calque);
-                int[] positionInspection = entrerInspectionUser(mainGrille);
+                int[] positionInspection = entrerInspectionUser(mainGrille,calque);
                 creerBombesTresors(mainGrille, positionInspection[0], positionInspection[1]);
                 SetAllCasesValues(mainGrille);
                 inspecterGrille(mainGrille, calque, positionInspection[0], positionInspection[1]);
@@ -660,10 +772,28 @@ namespace chasseAuxTresors
         }
         static void MidGame(string[,] mainGrille, string[,] calque)
         {
-
             while (!CheckResult(mainGrille, calque) && !stopGame)
             {
-                PlayerMove(mainGrille, calque);
+                Console.Clear();
+                AfficherGrille(calque);
+                if (AskNextMove() == true)
+                {
+                    Console.WriteLine(testFlag);
+                    if (testFlag == false)
+                    {
+                        PlayerMove(mainGrille, calque);
+                    }
+                    else
+                    {
+                        FlagMove(mainGrille, calque);
+                        testFlag = false;
+                    }
+                }
+                else
+                {
+                    AskLoadSave(mainGrille, calque);
+                    break;
+                }
             } 
         }
         static void EndGame()
@@ -723,7 +853,7 @@ namespace chasseAuxTresors
                 }
                 game.Close();
             }
-            catch (Exception e)//
+            catch (Exception e)
             {
                 Console.WriteLine("Une erreur dans l'enregistrement de votre partie est survenue: " + e.Message);
                 game.Dispose();
