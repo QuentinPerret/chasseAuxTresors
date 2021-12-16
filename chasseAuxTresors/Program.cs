@@ -255,7 +255,7 @@ namespace chasseAuxTresors
                 {
                     return true;
                 }
-                else if (entryUser == "RE" || entryUser == "RECHOICE")
+                else if (entryUser == "RE" || entryUser == "RETRY")
                 {
                     return false;
                 }
