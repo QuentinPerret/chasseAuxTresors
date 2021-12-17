@@ -255,7 +255,7 @@ namespace chasseAuxTresors
                 {
                     return true;
                 }
-                else if (entryUser == "RE" || entryUser == "RETRY")
+                else if (entryUser == "RE" || entryUser == "RECHOICE")
                 {
                     return false;
                 }
@@ -602,7 +602,6 @@ namespace chasseAuxTresors
             int NbCase = NbColonne * Nbligne;
             string[,] mainGrille = new string[Nbligne, NbColonne];
             string[,] calque = new string[Nbligne, NbColonne];
-            game.Close();
 
 
             int indLigne = 0;
@@ -633,6 +632,7 @@ namespace chasseAuxTresors
                     indLigne++;
                 }
             }
+            game.Close();
             string[][,] BothGrille = { mainGrille, calque };
             return BothGrille;
         }
@@ -670,42 +670,6 @@ namespace chasseAuxTresors
                     Console.ReadLine();
                     testSave = true;
 
-                }
-            }
-            return false;
-        }
-        static bool AskStopGame()
-        {
-            bool testGame = false;
-            int compteurErrorUser = 0;
-            while (testGame == false)
-            {
-                Console.WriteLine("Voulez vous arreter de jouer ? (répondre par O/N)");
-                string entryUser = Console.ReadLine();
-                entryUser = entryUser.ToUpper();
-                if (entryUser == "O" || entryUser == "OUI" || entryUser == "YES" || entryUser == "Y")
-                {
-                    Console.WriteLine("Merci d'avoir joué à notre jeu");
-                    testGame = true;
-                    Console.Clear();
-                    return true;
-
-                }
-                else if (entryUser == "N" || entryUser == "NON" || entryUser == "NO")
-                {
-                    testGame = true;
-                    Console.ReadLine();
-                    return false;
-                }
-                else
-                {
-                    compteurErrorUser++;
-                }
-                if (compteurErrorUser == 3)
-                {
-                    Console.WriteLine("Cela fait 3 fois que vous ne repondez pas à la question, le jeu va maintenant s'arrêter. Merci d'avoir joué !");
-                    testGame = true;
-                    return true;
                 }
             }
             return false;
@@ -892,6 +856,7 @@ Bonne chance !!!");
             {
                 Console.Clear();
                 int[] NoCase = { -2, -2 };
+                AfficherGrille(mainGrille , NoCase);
                 AfficherGrille(calque , NoCase);
                 PlayerMove(mainGrille, calque);
                 clearSave(mainGrille.Length);
